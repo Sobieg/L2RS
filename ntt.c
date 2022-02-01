@@ -121,7 +121,7 @@ void mul_coefficients(uint64_t* poly, const uint64_t* factors)
     unsigned int i;
 
     for(i = 0; i < RINGCT_N; i++)
-        poly[i] = montgomery_reduce((poly[i] * factors[i]) % RINGCT_Q);
+        poly[i] = montgomery_reduce((poly[i] * factors[i]));
 }
 
 #if (RINGCT_N == 512)
@@ -154,8 +154,8 @@ void ntt(uint64_t * a, const uint64_t* omega)
       {
         W = omega[jTwiddle++];
         temp = a[j];
-        a[j] = (temp + a[j + distance]); // Omit reduction (be lazy)
-        a[j + distance] = montgomery_reduce((W * ((uint32_t)temp + 3*RINGCT_Q - a[j + distance])));
+        a[j] = (temp + a[j + distance]) % RINGCT_Q;
+        a[j + distance] = montgomery_reduce((W * (temp + (uint64_t)3*RINGCT_Q - a[j + distance])));
       }
     }
     if(i+1<9){
@@ -169,7 +169,7 @@ void ntt(uint64_t * a, const uint64_t* omega)
           W = omega[jTwiddle++];
           temp = a[j];
           a[j] = (temp + a[j + distance]) % RINGCT_Q;
-          a[j + distance] = montgomery_reduce((W * ((uint32_t)temp + 3*RINGCT_Q - a[j + distance])));
+          a[j + distance] = montgomery_reduce((W * (temp + (uint64_t)3*RINGCT_Q - a[j + distance])));
         }
       }
     }
@@ -202,12 +202,12 @@ ntt(uint64_t * a, const uint64_t* omega)
     for(start = 0; start < distance;start++)
     {
       jTwiddle = 0;
-      for(j=start;j<NEWHOPE_N-1;j+=2*distance)
+      for(j=start;j<RINGCT_N-1;j+=2*distance)
       {
         W = omega[jTwiddle++];
         temp = a[j];
-        a[j] = (temp + a[j + distance]); // Omit reduction (be lazy)
-        a[j + distance] = montgomery_reduce_newhope((W * (temp + 3*NEWHOPE_Q - a[j + distance])));
+        a[j] = (temp + a[j + distance]) % RINGCT_Q; // Omit reduction (be lazy)
+        a[j + distance] = montgomery_reduce((W * (temp + (uint64_t) 3*RINGCT_Q - a[j + distance])));
       }
     }
 
@@ -216,12 +216,12 @@ ntt(uint64_t * a, const uint64_t* omega)
     for(start = 0; start < distance;start++)
     {
       jTwiddle = 0;
-      for(j=start;j<NEWHOPE_N-1;j+=2*distance)
+      for(j=start;j<RINGCT_N-1;j+=2*distance)
       {
         W = omega[jTwiddle++];
         temp = a[j];
-        a[j] = (temp + a[j + distance]) % NEWHOPE_Q;
-        a[j + distance] = montgomery_reduce_newhope((W * (temp + 3*NEWHOPE_Q - a[j + distance])));
+        a[j] = (temp + a[j + distance]) % RINGCT_Q;
+        a[j + distance] = montgomery_reduce((W * (temp + (uint64_t) 3*RINGCT_Q - a[j + distance])));
       }
     }
   }
@@ -247,7 +247,7 @@ ntt(uint64_t * a, const uint64_t* omega)
 
 
 
-    for(i=0;i<2;i+=2)
+    for(i=0;i<2;i++)
     {
         // Even level
         distance = (1<<i);
@@ -258,22 +258,8 @@ ntt(uint64_t * a, const uint64_t* omega)
             {
                 W = omega[jTwiddle++];
                 temp = a[j];
-                a[j] = (temp + a[j + distance]); // Omit reduction (be lazy)
-                a[j + distance] = montgomery_reduce((W * (temp + 3*RINGCT_Q - a[j + distance])));
-            }
-        }
-
-        // Odd level
-        distance <<= 1;
-        for(start = 0; start < distance;start++)
-        {
-            jTwiddle = 0;
-            for(j=start;j<RINGCT_N-1;j+=2*distance)
-            {
-                W = omega[jTwiddle++];
-                temp = a[j];
-                a[j] = (temp + a[j + distance]) % RINGCT_Q;
-                a[j + distance] = montgomery_reduce((W * (temp + 3*RINGCT_Q - a[j + distance])));
+                a[j] = (temp + a[j + distance]) % RINGCT_Q; // Omit reduction (be lazy)
+                a[j + distance] = montgomery_reduce((W * (temp + (uint64_t ) 3*RINGCT_Q - a[j + distance])));
             }
         }
     }

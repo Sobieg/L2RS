@@ -5,7 +5,7 @@
 #include "reduce.h"
 #include "params.h"
 
-static const uint64_t qinv = 2134799544; // -inverse_mod(p,2^rlog)
+static const uint64_t qinv = 1767374847; // -inverse_mod(p,2^rlog)
 static const uint64_t rlog = 32; // first power of two after RINGCT_Q
 
 /*************************************************
@@ -25,9 +25,16 @@ uint64_t montgomery_reduce(uint64_t a)
     // a < q < 2^32
     uint64_t u;
 
+    a = a%RINGCT_Q;
     u = (a * qinv);
     u &= (((uint64_t) 1<<rlog)-1);
     u *= RINGCT_Q;
     a = a + u;
-    return a >> rlog;
+    a = a>>rlog;
+    if (a < RINGCT_Q) {
+        return a;
+    }
+    else {
+        return a - RINGCT_Q;
+    }
 }

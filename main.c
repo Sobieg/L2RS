@@ -105,34 +105,34 @@ int main() {
     poly_init(&c);
     poly_print(&a);
     poly_print(&b);
-    poly_print(&c);
+//    poly_print(&c);
     printf("\n\n");
 
     poly_ntt(&a);
     poly_ntt(&b);
-    poly_print(&a);
-    poly_print(&b);
-    poly_print(&c);
-    printf("\n\n");
-
-    poly_invntt(&a);
-    poly_invntt(&b);
-    poly_print(&a);
-    poly_print(&b);
-    poly_print(&c);
-    printf("\n\n");
-
-
-//    poly_mul_pointwise(&c, &a, &b);
 //    poly_print(&a);
 //    poly_print(&b);
 //    poly_print(&c);
 //    printf("\n\n");
-//    poly_invntt(&c);
+
+//    poly_invntt(&a);
+//    poly_invntt(&b);
 //    poly_print(&a);
 //    poly_print(&b);
 //    poly_print(&c);
 //    printf("\n\n");
+
+
+    poly_mul_pointwise(&c, &a, &b);
+//    poly_print(&a);
+//    poly_print(&b);
+//    poly_print(&c);
+    printf("\n\n");
+    poly_invntt(&c);
+//    poly_print(&a);
+//    poly_print(&b);
+    poly_print(&c);
+    printf("\n\n");
 
 
     return 0;

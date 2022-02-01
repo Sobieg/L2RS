@@ -138,8 +138,8 @@ void poly_mul_pointwise(poly* dst, const poly* a, const poly* b){
     uint64_t t;
     for (int i = 0; i<RINGCT_N; i++) {
 //        dst->coeffs[i] = (a->coeffs[i] * b->coeffs[i]) % RINGCT_Q;
-    //3677394373 is a 2^(2*rlog)%q
-        t            = montgomery_reduce(3677394373*b->coeffs[i]); /* t is now in Montgomery domain */
+    //98198013 is a 2^(2*rlog)%q
+        t            = montgomery_reduce(98198013*b->coeffs[i]); /* t is now in Montgomery domain */
         dst->coeffs[i] = montgomery_reduce(a->coeffs[i] * t);  /* dst->coeffs[i] is back in normal domain */
     }
 }
@@ -179,6 +179,7 @@ void poly_mul(poly* dst, const poly* a, const poly* b) {
 **************************************************/
 void poly_ntt(poly *r)
 {
+    bitrev_vector(r->coeffs);
     mul_coefficients(r->coeffs, gammas_bitrev_montgomery);
     ntt((uint64_t *)r->coeffs, gammas_bitrev_montgomery);
 }

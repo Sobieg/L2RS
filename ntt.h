@@ -16,4 +16,5 @@ void mul_coefficients(uint64_t* poly, const uint64_t* factors);
 void ntt(uint64_t* a, const uint64_t* omega);
 
 
+
 #endif //RINGCT_REWORK_NTT_H
