@@ -10,7 +10,8 @@
 //#define RINGCT_N 512
 //#define RINGCT_N 1024
 #define RINGCT_N 4
-#define RINGCT_M 6
+//#define RINGCT_M 6
+#define RINGCT_M 2                          //we use M as m-1 in the paper, and M+1 as m in the paper
 #define RINGCT_LAM 100
 #define RINGCT_DELTA 1.007
 //#define RINGCT_Q 3677394373

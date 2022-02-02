@@ -144,28 +144,24 @@ void poly_mul_pointwise(poly* dst, const poly* a, const poly* b){
     }
 }
 
-void poly_constmul(poly* dst, const poly* a, uint64_t cof) {
+void poly_constmul(poly* dst, const poly* a, uint64_t cof, uint64_t q) {
     for (int i = 0; i<RINGCT_N; i++) {
-        dst->coeffs[i] = (dst->coeffs[i] * cof) % RINGCT_2Q; //checkme: why 2q?
+        dst->coeffs[i] = (a->coeffs[i] * cof) % q;
     }
 }
 
 void poly_mul(poly* dst, const poly* a, const poly* b) {
-//    poly_init(dst);
-//
-//    for (int i = 0; i<RINGCT_N; i++) {
-//        for (int j = 0; j<RINGCT_Q; j++) {
-//            dst->coeffs[(i+j)%RINGCT_Q] = dst->coeffs;
-//        }
-//    }
-//
-//
-//
-//    for (int i = 0; i<RINGCT_N; i++) {
-//        for (int j = 0; j<RINGCT_N; j++) {
-//            dst->coeffs[(i+j)%RINGCT_N] = (dst->coeffs[(i+j)%RINGCT_N] + (a->coeffs[j] * b->coeffs[i]) % RINGCT_Q) % RINGCT_Q;
-//        }
-//    }
+    poly_init(dst);
+
+    poly aa, bb;
+
+    poly_cofcopy(&aa, a);
+    poly_cofcopy(&bb, b);
+    poly_ntt(&aa);
+    poly_ntt(&bb);
+    poly_mul_pointwise(dst, &aa, &bb);
+    poly_invntt(dst);
+
 }
 
 /*************************************************

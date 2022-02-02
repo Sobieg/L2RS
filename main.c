@@ -8,26 +8,28 @@
 
 void LRCT_Setup_Test()
 {
-    poly A[2], H[2];
-    poly S[2];
-    poly L[2];
+    const int omega = 5;
+    poly A[RINGCT_M], H[RINGCT_M]; //todo: maybe special Matrix struct?
+    poly S[RINGCT_M];
+    poly S_pi[RINGCT_M];
+    poly L[omega];
     poly h;
-    poly u[3];
+//    poly u[3];
     poly c1;
     poly* t[2];
     unsigned char msg[2] = { 0x01, 0x02 }; //-V808
     int msgLen = 2;
 //    unsigned char bt[RINGCT_POLYBYTES] = { 0 };
-    size_t mLen = 2;
     size_t i = 0;
     size_t k = 0;
     int result = 0;
-    int w = 2;
-    int pai = 1;
+    int pi = 1;
 
     entropy_t entropy;
+    sampler_t sampler;
     unsigned char entropy_seed[SHA3_512_DIGEST_LENGTH] = {0xff};
     entropy_init(&entropy, entropy_seed);
+    sampler_init(&sampler, RINGCT_SIGMA, 0, 0, &entropy);
 
     t[0] = (poly *)malloc((3) * sizeof(poly));
     t[1] = (poly *)malloc((3) * sizeof(poly));
@@ -42,9 +44,43 @@ void LRCT_Setup_Test()
         }
 
     }
-    L2RS_setup(A, H, &entropy, 2);
-    L2RS_keyGen(L, S, A, &entropy, mLen);
-//    L2RS_Setup(A, H, 2);
+    L2RS_setup(A, H, &entropy);
+    //debug
+
+//    poly_print(A);
+//    poly_print(A+1);
+//    printf("\n");
+//    poly_print(H);
+//    poly_print(H+1);
+
+    //end debug
+
+    printf("pi = %d\n", pi);
+
+    for (int i = 0; i<omega; i++){
+        L2RS_keyGen(L+i, S, A, &entropy);
+//        poly_print(S);
+//        poly_print(S+1);
+//        printf("==\n");
+        if (i == pi) {
+            for (int j = 0; j<RINGCT_M; j++) {
+                poly_cofcopy(S_pi+j, S+j);
+            }
+        }
+    }
+
+    //debug
+//
+//    for(int i = 0; i<omega; i++) {
+//        poly_print(L+i);
+//    }
+
+    //end debug
+
+
+    L2RS_sigGen(&c1, t, &h, S_pi, (char *) msg, msgLen, L, H, A, pi, &entropy, NULL);
+
+
 //    L2RS_SampleKey(S, 2);
 //    L2RS_KeyGen(L, A, S, 2);
 //    L2RS_SampleKey(S, 2);
@@ -94,45 +130,8 @@ int main() {
 //        printf("%d ", sampler_gauss(&sampler));
 //    }
 
-//    LRCT_Setup_Test();
+    LRCT_Setup_Test();
 
-    //want to NTT^-1(NTT(a)) == a
-
-
-    poly a, b, c;
-    poly_uniform(&a, &entropy);
-    poly_uniform(&b, &entropy);
-    poly_init(&c);
-    poly_print(&a);
-    poly_print(&b);
-//    poly_print(&c);
-    printf("\n\n");
-
-    poly_ntt(&a);
-    poly_ntt(&b);
-//    poly_print(&a);
-//    poly_print(&b);
-//    poly_print(&c);
-//    printf("\n\n");
-
-//    poly_invntt(&a);
-//    poly_invntt(&b);
-//    poly_print(&a);
-//    poly_print(&b);
-//    poly_print(&c);
-//    printf("\n\n");
-
-
-    poly_mul_pointwise(&c, &a, &b);
-//    poly_print(&a);
-//    poly_print(&b);
-//    poly_print(&c);
-    printf("\n\n");
-    poly_invntt(&c);
-//    poly_print(&a);
-//    poly_print(&b);
-    poly_print(&c);
-    printf("\n\n");
 
 
     return 0;

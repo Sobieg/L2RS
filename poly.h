@@ -31,7 +31,7 @@ void poly_serial(poly* r);
 void poly_cofcopy(poly* dst, poly* src);
 void poly_shift(poly* dst, const poly* r, int iNumber);
 void poly_mul_pointwise(poly* dst, const poly* a, const poly* b);
-void poly_constmul(poly* dst, const poly* a, uint64_t cof);
+void poly_constmul(poly* dst, const poly* a, uint64_t cof, uint64_t q);
 void poly_mul(poly* dst, const poly* a, const poly* b);
 
 
